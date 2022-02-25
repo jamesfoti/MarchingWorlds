@@ -4,34 +4,45 @@ using UnityEngine;
 
 public class Planet : MonoBehaviour
 {
-	public float TotalRadius { get; private set; } = 0f;
+	public int TotalRadius { get; private set; } = 0;
+	public int TotalNumberOfCells { get; private set; } = 0;
+	public int NumberOfCellsInWidth { get; private set; } = 0;
+	public int NumberOfCellsInHeight { get; private set; } = 0;
+	public Dictionary<Vector2, Chunk> Chunks { get; private set; } = new Dictionary<Vector2, Chunk>();
 
 	[Range(-100f, 100f)]
 	public float amplitude = 1f;
-	[Range(-10f, 10f)]
+	[Range(-100f, 100f)]
 	public float frequency = 1f;
+	[Range(-100f, 100f)]
+	public float xOffset = 1f;
+	[Range(-100f, 100f)]
+	public float yOffset = 1f;
 	[Range(-10f, 10f)]
 	public float isoLevel = 0f;
 	[Range(1, 100)]
 	public int radiusInChunks = 1;
 	[Range(1, 100)]
 	public int chunkSize = 1;
-	[Range(1, 10)]
+	[Range(1, 100)]
 	public int chunkResolution = 1;
 	public Vector2 center = new Vector2();
 
 	[SerializeField]
 	private Chunk chunkPrefab;
-	private Dictionary<Vector2, Chunk> chunks = new Dictionary<Vector2, Chunk>();
-
+	
 	private void Start()
 	{
+		DestroyPlanet();
 		CreatePlanet();
 	}
 
 	public void CreatePlanet()
 	{
 		TotalRadius = CalculateActualRadius();
+		TotalNumberOfCells = 0;
+		NumberOfCellsInWidth = radiusInChunks * chunkSize * chunkResolution * 2;
+		NumberOfCellsInHeight = radiusInChunks * chunkSize * chunkResolution * 2;
 
 		for (int y = -radiusInChunks; y < radiusInChunks; y++)
 		{
@@ -44,14 +55,15 @@ public class Planet : MonoBehaviour
 				chunk.CreateMesh();
 				chunk.transform.parent = transform;
 				chunk.gameObject.name = $"BottomLeft = {chunk.BottomLeftPosition},  Center = {chunk.CenterPosition}";
-				chunks.Add(bottomLeftPosition, chunk);
+				Chunks.Add(bottomLeftPosition, chunk);
+				TotalNumberOfCells += chunk.MarchingSquaresHelper.Cells.Count;
 			}
 		}
 	}
 
 	public void DestroyPlanet()
 	{
-		foreach (KeyValuePair<Vector2, Chunk> entry in chunks)
+		foreach (KeyValuePair<Vector2, Chunk> entry in Chunks)
 		{
 			Chunk chunk = entry.Value;
 			chunk.ClearMesh();
@@ -66,10 +78,10 @@ public class Planet : MonoBehaviour
 			}
 		}
 
-		chunks.Clear();
+		Chunks.Clear();
 	}
 
-	private float CalculateActualRadius()
+	private int CalculateActualRadius()
 	{
 		return radiusInChunks * chunkSize;
 	}
