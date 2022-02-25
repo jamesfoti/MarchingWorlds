@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Planet : MonoBehaviour
 {
-	public int TotalRadius { get; private set; } = 0;
-	public int TotalNumberOfCells { get; private set; } = 0;
-	public int NumberOfCellsInWidth { get; private set; } = 0;
-	public int NumberOfCellsInHeight { get; private set; } = 0;
-	public Dictionary<Vector2, Chunk> Chunks { get; private set; } = new Dictionary<Vector2, Chunk>();
+	public int totalRadius { get; private set; } = 0;
+	public int totalNumberOfCells { get; private set; } = 0;
+	public int numberOfCellsInWidth { get; private set; } = 0;
+	public int numberOfCellsInHeight { get; private set; } = 0;
+	public Dictionary<Vector2, Chunk> chunks { get; private set; } = new Dictionary<Vector2, Chunk>();
 
 	[Range(-100f, 100f)]
 	public float amplitude = 1f;
@@ -18,8 +18,10 @@ public class Planet : MonoBehaviour
 	public float xOffset = 1f;
 	[Range(-100f, 100f)]
 	public float yOffset = 1f;
+	[Range(1f, 100f)]
+	public float scale = 1f;
 	[Range(-10f, 10f)]
-	public float isoLevel = 0f;
+	public float isoLevel = 1f;
 	[Range(1, 100)]
 	public int radiusInChunks = 1;
 	[Range(1, 100)]
@@ -39,10 +41,10 @@ public class Planet : MonoBehaviour
 
 	public void CreatePlanet()
 	{
-		TotalRadius = CalculateActualRadius();
-		TotalNumberOfCells = 0;
-		NumberOfCellsInWidth = radiusInChunks * chunkSize * chunkResolution * 2;
-		NumberOfCellsInHeight = radiusInChunks * chunkSize * chunkResolution * 2;
+		totalRadius = CalculateActualRadius();
+		totalNumberOfCells = 0;
+		numberOfCellsInWidth = radiusInChunks * chunkSize * chunkResolution * 2;
+		numberOfCellsInHeight = radiusInChunks * chunkSize * chunkResolution * 2;
 
 		for (int y = -radiusInChunks; y < radiusInChunks; y++)
 		{
@@ -54,19 +56,19 @@ public class Planet : MonoBehaviour
 				chunk.Initialize(this, bottomLeftPosition);
 				chunk.CreateMesh();
 				chunk.transform.parent = transform;
-				chunk.gameObject.name = $"BottomLeft = {chunk.BottomLeftPosition},  Center = {chunk.CenterPosition}";
-				Chunks.Add(bottomLeftPosition, chunk);
-				TotalNumberOfCells += chunk.MarchingSquaresHelper.Cells.Count;
+				chunk.gameObject.name = $"BottomLeft = {chunk.bottomLeftPosition},  Center = {chunk.centerPosition}";
+				chunks.Add(bottomLeftPosition, chunk);
+				totalNumberOfCells += chunk.cells.Count;
 			}
 		}
 	}
 
 	public void DestroyPlanet()
 	{
-		foreach (KeyValuePair<Vector2, Chunk> entry in Chunks)
+		foreach (KeyValuePair<Vector2, Chunk> entry in chunks)
 		{
 			Chunk chunk = entry.Value;
-			chunk.ClearMesh();
+			chunk.ClearMeshData();
 
 			if (Application.isPlaying)
 			{
@@ -78,7 +80,7 @@ public class Planet : MonoBehaviour
 			}
 		}
 
-		Chunks.Clear();
+		chunks.Clear();
 	}
 
 	private int CalculateActualRadius()

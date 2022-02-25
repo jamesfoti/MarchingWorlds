@@ -293,7 +293,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -55.88}
+  m_LocalPosition: {x: 0, y: 1, z: -26.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -328,13 +328,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3670b0138a0df0b40ad24c9458f77d8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amplitude: 0
-  frequency: 0
-  isoLevel: 0.4
-  radiusInChunks: 3
-  chunkSize: 2
-  cellSize: 1.93
-  interpolate: 0
+  amplitude: 1
+  frequency: 1
+  xOffset: 1
+  yOffset: 1
+  scale: 1
+  isoLevel: 1
+  radiusInChunks: 4
+  chunkSize: 3
+  chunkResolution: 1
   center: {x: 0, y: 0}
   chunkPrefab: {fileID: -841623628121638994, guid: b3ad25263847da5449442a3b1d107924, type: 3}
 --- !u!4 &2102078242
