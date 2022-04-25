@@ -8,25 +8,26 @@ public class Chunk : MonoBehaviour
 	public Vector2 centerPosition { get; private set; } = new Vector2();
 	public List<Vector3> vertices { get; private set; } = new List<Vector3>();
 	public List<int> triangles { get; private set; } = new List<int>();
+	public List<Color> colors { get; private set; } = new List<Color>();
 	public List<Cell> cells { get; private set; } = new List<Cell>();
 
 	private Mesh mesh;
-	private Planet planet = new Planet();
+	private TerrainData terrainData = new TerrainData();
 	private int chunkSize = 0;
 	private float halfChunkSize = 0f;
 	private float cellSize = 0f;
 	private int numberOfCellsInWidth = 0;
 	private int numberOfCellsInHeight = 0;
 
-	public void Initialize(Planet _planet, Vector3 _bottomLeftPosition)
+	public void Initialize(TerrainData _terrainData, Vector3 _bottomLeftPosition)
 	{
 		mesh = new Mesh();
-		planet = _planet;
-		chunkSize = planet.chunkSize;
+		terrainData = _terrainData;
+		chunkSize = terrainData.chunkSize;
 		halfChunkSize = chunkSize * .5f;
-		cellSize = 1f / planet.chunkResolution;
-		numberOfCellsInWidth = chunkSize * planet.chunkResolution;
-		numberOfCellsInHeight = chunkSize * planet.chunkResolution;
+		cellSize = 1f / terrainData.chunkResolution;
+		numberOfCellsInWidth = chunkSize * terrainData.chunkResolution;
+		numberOfCellsInHeight = chunkSize * terrainData.chunkResolution;
 
 		bottomLeftPosition = _bottomLeftPosition;
 		centerPosition = new Vector2(bottomLeftPosition.x + halfChunkSize, bottomLeftPosition.y + halfChunkSize);
@@ -49,6 +50,7 @@ public class Chunk : MonoBehaviour
 		MarchTheSquares();
 		mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray();
+		mesh.colors = colors.ToArray();
 		mesh.RecalculateNormals();
 		GetComponent<MeshFilter>().mesh = mesh;
 	}
@@ -64,10 +66,10 @@ public class Chunk : MonoBehaviour
 	{
 		foreach (Cell cell in cells)
 		{
-			cell.d1 = Sdf2D.Planet(cell.v1, planet.totalRadius, planet.amplitude, planet.frequency, planet.xOffset, planet.yOffset, planet.scale);
-			cell.d2 = Sdf2D.Planet(cell.v2, planet.totalRadius, planet.amplitude, planet.frequency, planet.xOffset, planet.yOffset, planet.scale);
-			cell.d3 = Sdf2D.Planet(cell.v3, planet.totalRadius, planet.amplitude, planet.frequency, planet.xOffset, planet.yOffset, planet.scale);
-			cell.d4 = Sdf2D.Planet(cell.v4, planet.totalRadius, planet.amplitude, planet.frequency, planet.xOffset, planet.yOffset, planet.scale);
+			cell.d1 = Sdf2D.Planet(cell.v1, terrainData);
+			cell.d2 = Sdf2D.Planet(cell.v2, terrainData);
+			cell.d3 = Sdf2D.Planet(cell.v3, terrainData);
+			cell.d4 = Sdf2D.Planet(cell.v4, terrainData);
 		}
 	}
 
@@ -108,7 +110,7 @@ public class Chunk : MonoBehaviour
 				AddQuad(cell.e1, cell.e3, cell.v3, cell.v2);
 				break;
 			case 7:
-				//AddPentagon(a.position, c.position, c.xEdgePosition, b.yEdgePosition, b.position);
+				// Needs more research: AddPentagon(a.position, c.position, c.xEdgePosition, b.yEdgePosition, b.position);
 				AddTriangle(cell.v1, cell.e4, cell.v2);
 				AddTriangle(cell.v2, cell.e4, cell.e3);
 				AddTriangle(cell.v3, cell.v2, cell.e3);
@@ -120,13 +122,13 @@ public class Chunk : MonoBehaviour
 				AddQuad(cell.v1, cell.v4, cell.e3, cell.e1);
 				break;
 			case 10:
-				//AddQuad(a.xEdgePosition, c.xEdgePosition, d.position, b.position);
+				// Needs more research: AddQuad(a.xEdgePosition, c.xEdgePosition, d.position, b.position);
 				AddTriangle(cell.v2, cell.e1, cell.e2);
 				AddQuad(cell.e1, cell.e4, cell.e3, cell.e2);
 				AddTriangle(cell.v4, cell.e3, cell.e4);
 				break;
 			case 11:
-				//AddPentagon(b.position, a.position, a.yEdgePosition, c.xEdgePosition, d.position);
+				// Needs more research: AddPentagon(b.position, a.position, a.yEdgePosition, c.xEdgePosition, d.position);
 				AddTriangle(cell.v4, cell.e3, cell.v1);
 				AddTriangle(cell.v1, cell.e3, cell.e2);
 				AddTriangle(cell.e2, cell.v2, cell.v1);
@@ -150,22 +152,22 @@ public class Chunk : MonoBehaviour
 	{
 		int result = 0;
 
-		if (cell.d1 > planet.isoLevel)
+		if (cell.d1 > terrainData.isoLevel)
 		{
 			result += 1;
 		}
 
-		if (cell.d2 > planet.isoLevel)
+		if (cell.d2 > terrainData.isoLevel)
 		{
 			result += 2;
 		}
 
-		if (cell.d3 > planet.isoLevel)
+		if (cell.d3 > terrainData.isoLevel)
 		{
 			result += 4;
 		}
 
-		if (cell.d4 > planet.isoLevel)
+		if (cell.d4 > terrainData.isoLevel)
 		{
 			result += 8;
 		}

@@ -2,18 +2,22 @@ using UnityEngine;
 
 public static class Sdf2D
 {
-	public static float Planet(Vector2 position, float radius, float amplitude, float frequency, float xOffset, float yOffset, float scale)
+	public static float Planet(Vector2 position, TerrainData terrainData)
 	{
-		// SOURCES:
-		// https://link.springer.com/article/10.1007/s10035-021-01105-6
-
 		float result = 0f;
 
-		if (position != null)
+		if (position != null && position.magnitude <= terrainData.realWorldRadius)
 		{
-			float xPosition = ((float) position.x / radius + xOffset) * scale;
-			float yPosition = ((float) position.y / radius + yOffset) * scale;
-			result = Circle(position, radius) * Mathf.PerlinNoise(xPosition * frequency, yPosition * frequency) * amplitude;
+			for (int i = 0; i < terrainData.octaves; i++)
+			{
+				float xPosition = ((float)position.x / terrainData.realWorldRadius + terrainData.xOffset);
+				float yPosition = ((float)position.y / terrainData.realWorldRadius + terrainData.yOffset);
+				result += Mathf.PerlinNoise(xPosition * terrainData.frequency, yPosition * terrainData.frequency);
+
+				terrainData.frequency /= 2f;
+			}
+
+			result /= terrainData.octaves;
 		}
 
 		return result;
