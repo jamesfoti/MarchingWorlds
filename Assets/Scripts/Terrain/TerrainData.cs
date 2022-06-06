@@ -23,5 +23,7 @@ public struct TerrainData
 	[HideInInspector]
 	public float realWorldRadius;
 	public Vector2 center;
+	public bool isWallsErected;
+	public float wallDepth;
 }
 

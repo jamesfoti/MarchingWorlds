@@ -28,7 +28,8 @@ public class Planet : MonoBehaviour
 				Vector2 bottomLeftPosition = new Vector2(x * terrainData.chunkSize, y * terrainData.chunkSize) + terrainData.center;
 
 				Chunk chunk = Instantiate(chunkPrefab);
-				chunk.Initialize(terrainData, bottomLeftPosition);
+				chunk.Initialize(bottomLeftPosition, terrainData);
+				chunk.ClearMesh();
 				chunk.CreateMesh();
 				chunk.transform.parent = transform;
 				chunk.gameObject.name = $"BottomLeft = {chunk.bottomLeftPosition},  Center = {chunk.centerPosition}";
@@ -42,7 +43,7 @@ public class Planet : MonoBehaviour
 		foreach (KeyValuePair<Vector2, Chunk> entry in chunks)
 		{
 			Chunk chunk = entry.Value;
-			chunk.ClearMeshData();
+			chunk.ClearMesh();
 
 			if (Application.isPlaying)
 			{
